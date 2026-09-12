@@ -22,9 +22,13 @@
 ### 构建应用（双击启动）
 
 ```sh
-npm install
-npm run dist:dmg
+npm run setup      # 安装依赖并检查环境
+npm run dist:dmg   # 构建分发物
 ```
+
+`npm run setup` 会安装依赖，并检查 Electron 的可执行文件是否确实已下载
+（某些 npm 配置会抑制 postinstall，导致它缺失）、jsQR 是否就位、图标是否存在，
+以及当前这台机器可以构建哪些目标。
 
 会在 `dist/` 下生成以下文件：
 
@@ -164,6 +168,7 @@ src/main/store.js     历史记录的保存／读取与 CSV 转换
 src/renderer/app.js   界面的组装与交互
 src/renderer/scanner.js  从摄像头画面与图片解码
 src/renderer/parse.js    扫描结果的内容类型识别
+scripts/setup.js         构建环境的准备与检查
 scripts/smoke-test.js    端到端的动作确认
 scripts/make-icon.js     生成应用图标
 scripts/adhoc-sign.js    打包后的临时签名（electron-builder 钩子）

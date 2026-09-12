@@ -22,9 +22,13 @@ Desktop QR code reader for laptops — scan with the built-in camera or read fro
 ### Build the app (launch by double-clicking)
 
 ```sh
-npm install
-npm run dist:dmg
+npm run setup      # install dependencies and check the environment
+npm run dist:dmg   # build the distributables
 ```
+
+`npm run setup` installs the dependencies and then checks that Electron's executable was
+actually downloaded (some npm configurations suppress the postinstall step, which leaves it
+missing), that jsQR is in place, that the icons exist, and which builds this machine can produce.
 
 This produces the following in `dist/`:
 
@@ -168,6 +172,7 @@ src/main/store.js     Saving / loading history and CSV conversion
 src/renderer/app.js   Building the UI and handling interaction
 src/renderer/scanner.js  Decoding from camera frames and images
 src/renderer/parse.js    Content-type detection for scanned strings
+scripts/setup.js         Prepares and checks the build environment
 scripts/smoke-test.js    End-to-end checks
 scripts/make-icon.js     Generates the app icons
 scripts/adhoc-sign.js    Ad-hoc signing after packaging (electron-builder hook)

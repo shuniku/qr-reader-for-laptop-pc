@@ -22,9 +22,13 @@
 ### アプリとして使う（ダブルクリックで起動）
 
 ```sh
-npm install
-npm run dist:dmg
+npm run setup      # 依存パッケージの導入と環境の点検
+npm run dist:dmg   # 配布物をビルド
 ```
+
+`npm run setup` は依存パッケージを入れたうえで、Electron の実行バイナリが実際に
+落ちてきているか（npm の設定によっては postinstall が抑止され、入らないことがあります）、
+jsQR の配置、アイコンの有無、そのマシンでどのビルドができるかまでを点検します。
 
 `dist/` に以下が生成されます。
 
@@ -165,6 +169,7 @@ src/main/store.js     履歴の保存／読み込み／CSV変換
 src/renderer/app.js   画面の組み立てと操作
 src/renderer/scanner.js  カメラ映像・画像からのデコード
 src/renderer/parse.js    読み取った文字列の種別判定
+scripts/setup.js         ビルド環境の準備と点検
 scripts/smoke-test.js    通しの動作確認
 scripts/make-icon.js     アプリアイコン（build/icon.icns）の生成
 scripts/adhoc-sign.js    ビルド後のアドホック署名（electron-builder フック）
