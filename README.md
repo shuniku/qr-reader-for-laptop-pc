@@ -2,7 +2,7 @@
 
 **English** | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
-A desktop app that reads QR codes using your laptop's built-in camera (or any connected camera) and from image files.
+Desktop QR code reader for laptops — scan with the built-in camera or read from image files. Keeps history locally and never opens a URL without asking.
 
 ## Features
 
