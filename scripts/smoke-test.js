@@ -31,6 +31,14 @@ const FIXTURES = [
   { name: '背景が透過', text: 'https://example.com/hello?q=1', type: 'url', options: { width: 400, margin: 2, color: { light: '#00000000' } } },
 ];
 
+// 画面が出ない・カメラ取得が返ってこないなどで固まっても必ず終わるようにする
+const TIMEOUT_MS = 120_000;
+const watchdog = setTimeout(() => {
+  console.error(`\n${TIMEOUT_MS / 1000} 秒以内に終わりませんでした。ハングとみなして終了します。`);
+  failures.push('タイムアウト');
+  finish();
+}, TIMEOUT_MS);
+
 require(path.join(ROOT, 'src', 'main', 'main.js'));
 
 const consoleErrors = [];
@@ -140,8 +148,19 @@ app.whenReady().then(async () => {
   finish();
 });
 
+// 何が起きても必ずプロセスを終わらせる。後始末の失敗で終了できないと CI が丸ごと止まる。
+let finished = false;
 function finish() {
-  fs.rmSync(sandboxDir, { recursive: true, force: true });
+  if (finished) return;
+  finished = true;
+  clearTimeout(watchdog);
+  try {
+    fs.rmSync(sandboxDir, { recursive: true, force: true });
+  } catch (error) {
+    // Windows では Electron が userData を掴んだままのため EPERM になる。
+    // OS の一時領域なので消せなくても問題にしない。
+    console.log(`  （一時ディレクトリの削除をスキップ: ${error.code ?? error.message}）`);
+  }
   console.log(failures.length === 0 ? '\n✅ すべて成功' : `\n❌ ${failures.length} 件失敗: ${failures.join(', ')}`);
   app.exit(failures.length === 0 ? 0 : 1);
 }
