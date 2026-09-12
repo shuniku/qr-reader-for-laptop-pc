@@ -105,8 +105,9 @@ is unavailable, and the per-OS label switching. It does not touch your real hist
 The test **only runs on the OS you run it from**. The Windows build is exercised on GitHub
 Actions' `windows-latest`, where all checks pass.
 
-Scanning through an actual camera cannot be covered by an automated test, so it has been
-verified separately on real macOS hardware.
+Scanning through an actual camera, opening a URL in the default browser, and dropping an
+image onto the window cannot be covered by an automated test, so they have been verified
+separately on real macOS hardware.
 
 However, CI has neither a camera nor a human, so the following are **unverified** on Windows:
 
