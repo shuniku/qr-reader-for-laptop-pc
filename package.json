@@ -1,0 +1,73 @@
+{
+  "name": "qr-reader-for-laptop-pc",
+  "version": "1.0.0",
+  "description": "ノートPCのインカメラ／接続カメラでQRコードを読み取るデスクトップアプリ",
+  "main": "src/main/main.js",
+  "private": true,
+  "scripts": {
+    "prestart": "node scripts/copy-vendor.js",
+    "start": "npm run prestart && electron .",
+    "vendor": "node scripts/copy-vendor.js",
+    "dist": "npm run vendor && electron-builder -p never --mac --dir",
+    "dist:dmg": "npm run vendor && electron-builder -p never --mac",
+    "pretest": "npm run vendor",
+    "test": "electron scripts/smoke-test.js",
+    "icon": "electron scripts/make-icon.js",
+    "dist:win": "npm run vendor && electron-builder -p never --win",
+    "dist:win:zip": "npm run vendor && electron-builder -p never --win zip --x64"
+  },
+  "dependencies": {
+    "jsqr": "^1.4.0"
+  },
+  "devDependencies": {
+    "electron": "^44.3.0",
+    "electron-builder": "^26.0.12",
+    "qrcode": "^1.5.4"
+  },
+  "build": {
+    "appId": "com.shuniku.qrreader",
+    "productName": "QR Reader",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "extendInfo": {
+        "NSCameraUsageDescription": "QRコードを読み取るためにカメラを使用します。"
+      },
+      "icon": "build/icon.icns"
+    },
+    "afterPack": "scripts/adhoc-sign.js",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "QR Reader",
+      "artifactName": "${productName}-${version}-${arch}-setup.${ext}"
+    }
+  }
+}

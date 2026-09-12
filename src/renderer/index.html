@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; font-src 'self';">
+<title>QR Reader</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span>QR Reader</span>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab is-active" data-tab="scan" role="tab">スキャン</button>
+    <button class="tab" data-tab="history" role="tab">履歴 <span class="badge" id="history-count">0</span></button>
+  </nav>
+</header>
+
+<main>
+  <!-- ============ スキャン ============ -->
+  <section class="view is-active" id="view-scan" role="tabpanel">
+    <div class="stage">
+      <div class="stage-inner" id="stage-inner">
+        <video id="video" playsinline muted></video>
+        <canvas id="overlay"></canvas>
+      </div>
+      <div class="stage-state" id="stage-state">
+        <p class="stage-title" id="stage-title">カメラを起動しています…</p>
+        <p class="stage-note" id="stage-note"></p>
+        <button class="button button-primary" id="stage-action" hidden></button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="button button-primary" id="btn-toggle">スキャン停止</button>
+      <label class="field">
+        <span class="field-label">カメラ</span>
+        <select id="camera-select"></select>
+      </label>
+      <button class="button" id="btn-image">画像から読み取る…</button>
+      <label class="check"><input type="checkbox" id="opt-sound" checked><span>読み取り音</span></label>
+      <label class="check"><input type="checkbox" id="opt-mirror" checked><span>左右反転</span></label>
+    </div>
+    <p class="hint">
+      画像ファイルをウィンドウにドラッグ＆ドロップ、または <span id="hint-paste"></span> でクリップボードの画像も読み取れます。
+    </p>
+  </section>
+
+  <!-- ============ 履歴 ============ -->
+  <section class="view" id="view-history" role="tabpanel">
+    <div class="toolbar">
+      <input type="search" id="history-search" placeholder="履歴を検索（内容・種別）" autocomplete="off">
+      <div class="toolbar-actions">
+        <button class="button" id="btn-export-json">JSON出力</button>
+        <button class="button" id="btn-export-csv">CSV出力</button>
+        <button class="button" id="btn-reveal">保存先を開く</button>
+        <button class="button button-danger" id="btn-clear">すべて削除</button>
+      </div>
+    </div>
+    <ul class="history" id="history-list"></ul>
+    <p class="empty" id="history-empty">まだ読み取り履歴がありません。</p>
+    <p class="hint" id="history-path"></p>
+  </section>
+</main>
+
+<!-- ============ 読み取り結果 ============ -->
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <span class="type-badge" id="modal-type">テキスト</span>
+      <span class="modal-source" id="modal-source"></span>
+      <button class="icon-button" id="modal-close" aria-label="閉じる">✕</button>
+    </div>
+    <h2 class="modal-title" id="modal-title"></h2>
+    <div class="warn" id="modal-warn" hidden></div>
+    <dl class="fields" id="modal-fields"></dl>
+    <div class="raw">
+      <div class="raw-head">
+        <span>読み取った内容</span>
+        <button class="link-button" id="btn-copy-raw">コピー</button>
+      </div>
+      <pre id="modal-raw"></pre>
+    </div>
+    <div class="modal-actions" id="modal-actions"></div>
+    <p class="modal-foot" id="modal-foot">この内容は履歴に保存されました。</p>
+  </div>
+</div>
+
+<div class="dropzone" id="dropzone" hidden><span>画像をドロップしてQRコードを読み取る</span></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="vendor/jsQR.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

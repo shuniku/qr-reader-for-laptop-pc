@@ -1,0 +1,65 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: Windows
+            os: windows-latest
+            build: npm run dist:win
+            artifacts: |
+              dist/*.exe
+              dist/*.zip
+          - label: macOS
+            os: macos-latest
+            build: npm run dist:dmg
+            artifacts: |
+              dist/*.dmg
+              dist/*.zip
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # npm の設定によっては electron の postinstall が抑止され、
+      # 実行バイナリが落ちてこないことがあるため念のため補う
+      - name: Electron のバイナリを確認
+        shell: bash
+        run: |
+          if [ ! -f node_modules/electron/path.txt ]; then
+            node node_modules/electron/install.js
+          fi
+
+      # Electron を起動する通しテスト。GUI セッションのある Windows / macOS ランナーで動かす
+      - name: 動作確認
+        run: npm test
+
+      - name: パッケージング
+        run: ${{ matrix.build }}
+        env:
+          # 署名証明書は登録していないため自動探索を止める（macOS はビルド後にアドホック署名する）
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.label }}
+          path: ${{ matrix.artifacts }}
+          if-no-files-found: error
+          retention-days: 14
