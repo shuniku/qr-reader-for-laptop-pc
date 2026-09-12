@@ -1,5 +1,7 @@
 # QR Reader for Laptop PC
 
+[English](README.en.md) | **日本語** | [简体中文](README.zh-CN.md)
+
 ノートPCのインカメラ（または接続したカメラ）と画像ファイルからQRコードを読み取るデスクトップアプリです。
 
 ## できること
@@ -124,8 +126,11 @@ Windows 実機がなくても、ここで **インストーラの生成とテス
 ### アイコンの再生成
 
 ```sh
-npm run icon   # build/icon.icns を作り直す
+npm run icon   # build/icon.icns（macOS）と build/icon.ico（Windows）を作り直す
 ```
+
+macOS の `sips` / `iconutil` を使うため、実行には macOS が必要です。
+生成済みのアイコンはリポジトリに含めてあるので、通常は実行不要です。
 
 ## キーボードショートカット
 
