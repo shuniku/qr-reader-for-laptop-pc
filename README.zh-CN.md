@@ -1,6 +1,6 @@
 # QR Reader for Laptop PC
 
-[English](README.en.md) | [日本語](README.md) | **简体中文**
+[English](README.md) | [日本語](README.ja.md) | **简体中文**
 
 一款桌面应用，可通过笔记本电脑的内置摄像头（或任何外接摄像头）以及图片文件读取二维码。
 
@@ -174,3 +174,18 @@ scripts/adhoc-sign.js    打包后的临时签名（electron-builder 钩子）
 - URL 一定会先显示内容，再由用户选择后续操作。对国际化域名（外观容易混淆的网址）会给出警告。
 - 应用内不会跳转到外部网站，也不会打开新窗口。
 - 不会将任何内容发送到外部，全部数据都保存在本地。
+
+## 许可证
+
+MIT License（见 [LICENSE](LICENSE)）
+
+构建出的应用还会按各自的许可证一并分发以下库：
+
+| 库 | 许可证 |
+| --- | --- |
+| [Electron](https://github.com/electron/electron) | MIT |
+| [jsQR](https://github.com/cozmo/jsQR) | Apache-2.0 |
+
+这些许可证文本也包含在分发物中：可执行文件旁的 `LICENSE.electron.txt` 与
+`LICENSES.chromium.html`，以及 `app.asar` 内的 `LICENSE` 和
+`node_modules/jsqr/LICENSE`。

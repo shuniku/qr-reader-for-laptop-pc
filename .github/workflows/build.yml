@@ -4,10 +4,7 @@ on:
   push:
     branches: [main]
     tags: ['v*']
-    # ドキュメントだけの変更ではビルドしない（Actions 画面の Run workflow で手動実行は可能）
-    paths-ignore: ['**/*.md', 'LICENSE']
   pull_request:
-    paths-ignore: ['**/*.md', 'LICENSE']
   workflow_dispatch:
 
 jobs:

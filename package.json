@@ -2,6 +2,8 @@
   "name": "qr-reader-for-laptop-pc",
   "version": "1.0.0",
   "description": "ノートPCのインカメラ／接続カメラでQRコードを読み取るデスクトップアプリ",
+  "author": "shuniku",
+  "license": "MIT",
   "main": "src/main/main.js",
   "private": true,
   "scripts": {
@@ -29,7 +31,8 @@
     "productName": "QR Reader",
     "files": [
       "src/**/*",
-      "package.json"
+      "package.json",
+      "LICENSE"
     ],
     "mac": {
       "category": "public.app-category.utilities",

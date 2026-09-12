@@ -1,177 +1,194 @@
 # QR Reader for Laptop PC
 
-[English](README.en.md) | **日本語** | [简体中文](README.zh-CN.md)
+**English** | [日本語](README.ja.md) | [简体中文](README.zh-CN.md)
 
-ノートPCのインカメラ（または接続したカメラ）と画像ファイルからQRコードを読み取るデスクトップアプリです。
+A desktop app that reads QR codes using your laptop's built-in camera (or any connected camera) and from image files.
 
-## できること
+## Features
 
-- **カメラで読み取る** — インカメラ／外付けカメラを選択してリアルタイムにスキャン。検出した位置を枠で表示します。
-- **画像から読み取る** — ファイル選択・ウィンドウへのドラッグ＆ドロップ・クリップボードの画像（⇧⌘V）に対応。小さい画像、白黒反転、背景が透過したPNGも読み取れます。
-- **内容の表示と保存** — 読み取った内容は自動でローカル（`history.json`）に保存され、「履歴」タブで検索・再表示・削除・JSON/CSVエクスポートができます。
-- **URLの扱い** — URLを読み取ると、**既定のブラウザで開く**か**クリップボードにコピー**するかをダイアログで選べます。自動では開きません。
-- **種別の自動判定** — URL / メール / 電話 / SMS / 位置情報 / Wi-Fi設定 / 連絡先（vCard・MeCard）/ カレンダー予定 / テキストを判別し、それぞれに応じた操作（対応アプリで開く、項目ごとのコピー、`.vcf` `.ics` として保存など）を提示します。
+- **Scan with a camera** — Pick your built-in or external camera and scan in real time. Detected codes are outlined on the preview.
+- **Read from images** — Open a file, drag and drop onto the window, or paste an image from the clipboard (⇧⌘V). Small images, inverted (white-on-black) codes, and PNGs with transparent backgrounds all work.
+- **Show and save results** — Every scan is saved locally to `history.json` automatically. The History tab lets you search, reopen, delete, and export to JSON or CSV.
+- **How URLs are handled** — When a URL is scanned, a dialog asks whether to **open it in your default browser** or **copy it to the clipboard**. Nothing opens automatically.
+- **Automatic content-type detection** — Recognizes URLs, email addresses, phone numbers, SMS, geo coordinates, Wi-Fi settings, contacts (vCard / MeCard), calendar events, and plain text, and offers the matching actions (open in the relevant app, copy an individual field, save as `.vcf` or `.ics`, and so on).
 
-## 必要なもの
+## Requirements
 
 - macOS / Windows / Linux
-- Node.js 18 以降
+- Node.js 18 or later
 
-## 使い方
+## Getting started
 
-### アプリとして使う（ダブルクリックで起動）
+### Build the app (launch by double-clicking)
 
 ```sh
 npm install
 npm run dist:dmg
 ```
 
-`dist/` に以下が生成されます。
+This produces the following in `dist/`:
 
-| ファイル | 用途 |
+| File | Purpose |
 | --- | --- |
-| `dist/mac-arm64/QR Reader.app` | そのままダブルクリックで起動できます |
-| `dist/QR Reader-1.0.0-arm64.dmg` | 開いて **QR Reader.app** を `アプリケーション` フォルダへドラッグするとインストールできます |
-| `dist/QR Reader-1.0.0-arm64-mac.zip` | 配布用 |
+| `dist/mac-arm64/QR Reader.app` | Double-click to launch |
+| `dist/QR Reader-1.0.0-arm64.dmg` | Open it and drag **QR Reader.app** into `Applications` to install |
+| `dist/QR Reader-1.0.0-arm64-mac.zip` | For distribution |
 
-`アプリケーション` フォルダに入れると、Launchpad や Spotlight からも起動できます。
-`.app` だけでよい場合は `npm run dist`（dmg を作らないぶん速い）で十分です。
+Once it is in `Applications`, you can also launch it from Launchpad or Spotlight.
+If you only need the `.app`, `npm run dist` is enough and is faster because it skips the dmg.
 
-> Apple の開発者証明書がない環境では、ビルド時に自動でアドホック署名を掛けています。
-> 自分のマシンで動かすぶんには問題ありませんが、他の人に配る場合は
-> ダウンロードした側で **右クリック →「開く」** が必要になります。
+> Without an Apple developer certificate, the build applies an ad-hoc signature automatically.
+> That is fine for running it on your own machine, but anyone you share it with will need to
+> **right-click → Open** the first time.
 
-### Windows 版をビルドする
+### Build for Windows
 
-macOS からクロスビルドできます。
+You can cross-build from macOS.
 
 ```sh
 npm run dist:win
 ```
 
-| ファイル | 用途 |
+| File | Purpose |
 | --- | --- |
-| `dist/QR Reader-1.0.0-win.zip` | 展開して `QR Reader.exe` をダブルクリック（ポータブル版） |
-| `dist/win-unpacked/` | 展開済みの中身 |
+| `dist/QR Reader-1.0.0-win.zip` | Unzip and double-click `QR Reader.exe` (portable) |
+| `dist/win-unpacked/` | The unpacked contents |
 
-Apple Silicon の Mac では、ZIP だけを作る以下のほうが確実です。
+On Apple Silicon Macs, building only the ZIP is more reliable:
 
 ```sh
 npm run dist:win:zip
 ```
 
-> **インストーラ（setup.exe）を Mac で作る場合**
-> NSIS の `makensis` は x86_64 バイナリのため **Rosetta 2** が必要です。
-> 未インストールだと `spawn Unknown system error -86` で失敗します。
+> **Building the installer (setup.exe) on a Mac**
+> NSIS's `makensis` is an x86_64 binary, so it needs **Rosetta 2**.
+> Without it the build fails with `spawn Unknown system error -86`.
 >
 > ```sh
 > softwareupdate --install-rosetta --agree-to-license
 > ```
 >
-> Rosetta を入れたくない場合は、後述の GitHub Actions でビルドしてください。
+> If you would rather not install Rosetta, build with GitHub Actions instead (see below).
 
-生成対象は x64 です。ARM 版 Windows も必要なら `package.json` の
-`build.win.target` の `arch` に `"arm64"` を足してください。
+The build targets x64. If you also need Windows on ARM, add `"arm64"` to the `arch` list
+under `build.win.target` in `package.json`.
 
-Windows 版も署名していないため、初回起動時に SmartScreen の警告が出ます。
-「詳細情報」→「実行」で起動できます。
+The Windows build is unsigned as well, so SmartScreen will warn you on first launch.
+Choose **More info → Run anyway**.
 
-### 開発中に起動する
+### Run in development
 
 ```sh
 npm start
 ```
 
-### カメラの許可について
+### About camera permission
 
-初回起動時にカメラの使用許可を求められます。macOS で許可し忘れた場合は
-**システム設定 →「プライバシーとセキュリティ」→「カメラ」** で許可してから再起動してください。
-許可しなくても、画像ファイルからの読み取りは利用できます。
+You will be asked for camera permission the first time you launch the app. On macOS, if you
+missed the prompt, grant it under **System Settings → Privacy & Security → Camera** and
+restart the app. Reading from image files works without camera permission.
 
-なお `npm start` で起動した場合、許可を求められるのは **Electron**（開発用の実行ファイル）です。
-ビルドした `QR Reader.app` とは別枠で管理されるため、それぞれ一度ずつ許可が必要です。
+Note that when you launch with `npm start`, the permission is requested for **Electron**
+(the development executable), which macOS tracks separately from the built `QR Reader.app`.
+Each one needs to be granted once.
 
-### 動作確認
+### Running the tests
 
 ```sh
 npm test
 ```
 
-Electron 上でアプリを起動し、画像デコード・種別判定・履歴の保存／削除・外部リンクの制限・
-カメラ非許可時の表示・OSごとの表示切り替えをまとめて検証します（本物の履歴には影響しません）。
+This launches the app under Electron and checks image decoding, content-type detection,
+saving and deleting history, the external-link restrictions, what is shown when the camera
+is unavailable, and the per-OS label switching. It does not touch your real history.
 
-このテストは **実行中の OS 上でしか動きません**。Windows 版は GitHub Actions の
-`windows-latest` で実行し、全項目が通ることを確認済みです。
+The test **only runs on the OS you run it from**. The Windows build is exercised on GitHub
+Actions' `windows-latest`, where all checks pass.
 
-ただし CI にはカメラも人もいないため、Windows では次が **未検証** です。
+However, CI has neither a camera nor a human, so the following are **unverified** on Windows:
 
-- カメラからの読み取り（CI は「カメラが見つかりません」の経路を通る）
-- 既定ブラウザ／メールアプリでの URL の起動
-- ドラッグ＆ドロップ、ファイル選択ダイアログ
-- インストーラの実行と SmartScreen の挙動、実際の見た目・フォント
+- Reading from a camera (CI goes down the "no camera found" path)
+- Opening URLs in the default browser or mail client
+- Drag and drop, and the native file dialogs
+- Running the installer, SmartScreen behavior, and the actual appearance and fonts
 
-### GitHub Actions でビルドする
+### Build with GitHub Actions
 
-`.github/workflows/build.yml` を用意してあります。`main` への push、タグ（`v*`）、
-または Actions 画面の **Run workflow** で、Windows と macOS の両方をビルドします。
+`.github/workflows/build.yml` is included. It builds both Windows and macOS on a push to
+`main`, on a `v*` tag, or via **Run workflow** in the Actions tab.
 
-- `windows-latest` で `npm run dist:win` → **setup.exe** と zip（Rosetta 不要）
-- `macos-latest` で `npm run dist:dmg` → dmg と zip
-- 両方で `npm test` を実行してから成果物を Artifacts にアップロード
+- `windows-latest` runs `npm run dist:win` → **setup.exe** and a zip (no Rosetta needed)
+- `macos-latest` runs `npm run dist:dmg` → dmg and zip
+- Both run `npm test` before uploading the results as artifacts
 
-Windows 実機がなくても、ここで **インストーラの生成とテストの通過**まで確認できます。
-実際に `windows-latest` 上で全 22 項目が通り、`QR Reader-1.0.0-x64-setup.exe` が
-生成されることを確認済みです。
+This lets you confirm that **the installer builds and the tests pass** without owning a
+Windows machine. All 22 checks have been confirmed to pass on `windows-latest`, producing
+`QR Reader-1.0.0-x64-setup.exe`.
 
-### アイコンの再生成
+### Regenerating the icon
 
 ```sh
-npm run icon   # build/icon.icns（macOS）と build/icon.ico（Windows）を作り直す
+npm run icon   # rebuilds build/icon.icns (macOS) and build/icon.ico (Windows)
 ```
 
-macOS の `sips` / `iconutil` を使うため、実行には macOS が必要です。
-生成済みのアイコンはリポジトリに含めてあるので、通常は実行不要です。
+This uses macOS's `sips` and `iconutil`, so it must be run on macOS. The generated icons are
+committed to the repository, so you normally do not need to run it.
 
-## キーボードショートカット
+## Keyboard shortcuts
 
-| 操作 | macOS | Windows / Linux |
+| Action | macOS | Windows / Linux |
 | --- | --- | --- |
-| 画像から読み取る | ⌘O | Ctrl+O |
-| クリップボードの画像から読み取る | ⇧⌘V | Ctrl+Shift+V |
-| スキャンの開始／停止 | ⌘R | Ctrl+R |
-| スキャン／履歴タブの切り替え | ⌘1 / ⌘2 | Ctrl+1 / Ctrl+2 |
-| ダイアログを閉じる | Esc | Esc |
+| Read from an image file | ⌘O | Ctrl+O |
+| Read the image on the clipboard | ⇧⌘V | Ctrl+Shift+V |
+| Start / stop scanning | ⌘R | Ctrl+R |
+| Switch between Scan and History | ⌘1 / ⌘2 | Ctrl+1 / Ctrl+2 |
+| Close the dialog | Esc | Esc |
 
-画面上の表記は実行中の OS に合わせて切り替わります。
+The labels shown in the app switch to match the OS it is running on.
 
-## 技術構成
+## How it is built
 
-| 層 | 使用技術 | 役割 |
+| Layer | Technology | Role |
 | --- | --- | --- |
-| アプリ本体 | Electron | 既定ブラウザの起動、クリップボード、ファイル保存、ネイティブメニュー |
-| デコード | [jsQR](https://github.com/cozmo/jsQR) | ネイティブ依存なしのQRデコード（zbar / OpenCV 不要） |
-| 映像取得 | `getUserMedia` + Canvas | カメラ映像と画像ファイルを同じ経路で解析 |
-| 保存 | `app.getPath('userData')/history.json` | 一時ファイル経由で書き込み、最大1000件を保持 |
+| Application shell | Electron | Launching the default browser, clipboard, saving files, native menus |
+| Decoding | [jsQR](https://github.com/cozmo/jsQR) | QR decoding with no native dependencies (no zbar or OpenCV) |
+| Capture | `getUserMedia` + Canvas | Camera frames and image files go through the same path |
+| Storage | `app.getPath('userData')/history.json` | Written via a temporary file, keeps up to 1000 entries |
 
-### ファイル構成
+### Project layout
 
 ```
-src/main/main.js      Electron メインプロセス、IPC、メニュー
-src/main/preload.js   renderer へ公開する API（contextBridge）
-src/main/store.js     履歴の保存／読み込み／CSV変換
-src/renderer/app.js   画面の組み立てと操作
-src/renderer/scanner.js  カメラ映像・画像からのデコード
-src/renderer/parse.js    読み取った文字列の種別判定
-scripts/smoke-test.js    通しの動作確認
-scripts/make-icon.js     アプリアイコン（build/icon.icns）の生成
-scripts/adhoc-sign.js    ビルド後のアドホック署名（electron-builder フック）
-.github/workflows/build.yml  Windows / macOS のビルドとテスト
+src/main/main.js      Electron main process, IPC, menus
+src/main/preload.js   The API exposed to the renderer (contextBridge)
+src/main/store.js     Saving / loading history and CSV conversion
+src/renderer/app.js   Building the UI and handling interaction
+src/renderer/scanner.js  Decoding from camera frames and images
+src/renderer/parse.js    Content-type detection for scanned strings
+scripts/smoke-test.js    End-to-end checks
+scripts/make-icon.js     Generates the app icons
+scripts/adhoc-sign.js    Ad-hoc signing after packaging (electron-builder hook)
+.github/workflows/build.yml  Windows / macOS builds and tests
 ```
 
-## セキュリティ上の扱い
+## Security notes
 
-- renderer は `contextIsolation: true` / `nodeIntegration: false`。`preload.js` で公開したAPI以外は使えません。
-- 外部アプリへ渡せるのは `http` `https` `mailto` `tel` `sms` `geo` のみ。`file:` や `javascript:` は拒否します。
-- URLは必ず内容を表示したうえでユーザーが操作を選びます。国際化ドメイン名（見た目が紛らわしいURL）には警告を出します。
-- アプリ内から外部サイトへ遷移したり、新しいウィンドウを開いたりしません。
-- 読み取った内容の送信先はありません。すべてローカルに保存されます。
+- The renderer runs with `contextIsolation: true` and `nodeIntegration: false`. Nothing beyond the API exposed in `preload.js` is reachable from it.
+- Only `http`, `https`, `mailto`, `tel`, `sms`, and `geo` can be handed to external apps. `file:` and `javascript:` are rejected.
+- URLs are always displayed first, and you choose what happens next. Internationalized domain names (which can look deceptively similar to other sites) trigger a warning.
+- The app never navigates to external sites or opens new windows.
+- Nothing is sent anywhere. Everything stays on your machine.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+The packaged app also redistributes the following libraries under their own licenses:
+
+| Library | License |
+| --- | --- |
+| [Electron](https://github.com/electron/electron) | MIT |
+| [jsQR](https://github.com/cozmo/jsQR) | Apache-2.0 |
+
+Their license texts ship inside the build: `LICENSE.electron.txt` and
+`LICENSES.chromium.html` next to the executable, and `LICENSE` plus
+`node_modules/jsqr/LICENSE` inside `app.asar`.
