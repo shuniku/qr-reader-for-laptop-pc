@@ -23,7 +23,7 @@
     "jsqr": "^1.4.0"
   },
   "devDependencies": {
-    "electron": "^44.9.3",
+    "electron": "^44.10.0",
     "electron-builder": "^26.0.12",
     "qrcode": "^1.5.4"
   },
